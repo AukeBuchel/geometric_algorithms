@@ -17,3 +17,16 @@ class Polygon():
         x, y = point
         xmin, xmax, ymin, ymax = self.lims
         return (xmin <= x <= xmax) and (ymin <= y <= ymax)
+    
+    def getPoint(self, clockWiseIndex: int):
+        xmin, xmax, ymin, ymax = self.lims
+        if clockWiseIndex == 0:
+            return (xmin, ymin)
+        elif clockWiseIndex == 1:
+            return (xmax, ymin)
+        elif clockWiseIndex == 2:
+            return (xmax, ymax)
+        elif clockWiseIndex == 3:
+            return (xmin, ymax)
+        else:
+            raise ValueError("clockWiseIndex must be in [0, 3]")
