@@ -1,5 +1,5 @@
-from Node import Node
-from TreePrint import pretty_tree
+from balancedtree.src.Node import Node
+from balancedtree.src.TreePrint import pretty_tree
 from collections import OrderedDict
 
 
@@ -10,10 +10,10 @@ class Tree():
         self.root = self.build_tree(initialList)
         self.current_node = None
 
-    def build_tree(self, initialList):
-        initialList = list(OrderedDict.fromkeys(initialList))
+    def build_tree(self, initList):
+        initialList = list(OrderedDict.fromkeys(initList))
         for _ in range(len(initialList)):
-            node_to_insert = Node(initialList[_])
+            node_to_insert = Node(initialList[_].key, initList[_].value)
             # Special case: if the tree is empty, just set the root
             # the new node
             if _ == 0:
@@ -136,13 +136,13 @@ class Tree():
 
         return node
 
-    def insert(self, node_to_insert):
-        search_node = self.search(node_to_insert)
+    def insert(self, key: float, value=None):
+        search_node = self.search(key)
         if search_node is not None:
-            print(
-                f"Node {search_node.key} already exists, remove {search_node.key} before inserting.")
+            # this node belongs to multiple intervals
+            search_node.value.append(key)
         else:
-            node_to_insert = Node(node_to_insert)
+            node_to_insert = Node(key, value)
             # Special case: if the tree is empty, just set the root
             # the new node
             if self.root is None:

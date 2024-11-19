@@ -1,7 +1,7 @@
 from typing import Tuple
 
 class Polygon():
-    def __init__(self, args: list):
+    def __init__(self, args: list, id: int):
         if len(args) == 2:
             assert all([type(x) == Tuple for x in args])
             xmin = min([x[0] for x in args])
@@ -12,6 +12,9 @@ class Polygon():
         elif len(args) == 4:
             assert all([type(x) == float for x in args])
             self.lims = args
+            
+            
+        self.id = id
     
     def contains(self, point: tuple[float, float]):
         x, y = point
@@ -30,3 +33,6 @@ class Polygon():
             return (xmin, ymax)
         else:
             raise ValueError("clockWiseIndex must be in [0, 3]")
+        
+    def getLimits(self):
+        return self.lims

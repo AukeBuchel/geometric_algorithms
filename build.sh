@@ -5,7 +5,7 @@
 # Check if sufficient arguments are provided
 if [ "$#" -lt 2 ]; then
     echo "Usage: $0 <source_directory> <output_file>"
-    echo "Example: $0 bruteforce brute_force.py main:main"
+    echo "Example: $0 bruteforce brute_force.py"
     exit 1
 fi
 

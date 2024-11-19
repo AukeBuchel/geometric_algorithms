@@ -14,7 +14,8 @@ def readInput():
     for i in range(inp):
         squares.append(tuple(map(float, input().split())))
         
-    squares = [Polygon(s) for s in squares]
+    for i in range(len(squares)):
+        squares[i] = Polygon(squares[i], i)
     return points, squares
 
 
@@ -28,5 +29,5 @@ def main():
     print(output)
     
     
-    
-    print(output)
+if __name__ == "__main__":
+    main()

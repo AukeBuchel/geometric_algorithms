@@ -32,3 +32,7 @@ def main():
                output += 1 
     
     print(output)
+
+
+if __name__ == "__main__":
+    main()

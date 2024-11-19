@@ -4,8 +4,12 @@ from functools import total_ordering
 @total_ordering
 class Node:
 
-    def __init__(self, key):
+    def __init__(self, key: float, value=None):
         self.key = key
+        if isinstance(value, list):
+            self.value = [x for x in value]
+        else:
+            self.value = [value]
         self.parent = None
         self.left = None
         self.right = None
@@ -17,6 +21,9 @@ class Node:
 
     def __eq__(self, other):
         return hasattr(other, 'key') and self.key == other.key
+    
+    def __hash__(self):
+        return hash(self.key)
 
     def get_balance(self):
         # Get current height of left subtree, or -1 if None
