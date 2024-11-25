@@ -93,7 +93,8 @@ class PlaneSweep():
     
     def __countIntervals(self, xValue: float):
         # search the balanced tree for xValue. This is likely going to fail, 
-        assert self.__sweepState is not None
+        if self.__sweepState is None:
+            return 0
         
         node: Node = self.__sweepState.root
         visitedIntervals = []
