@@ -37,14 +37,11 @@ def main():
     # points, squares = readInput()
     points, squares = readInputFromFile()
     
-    polygons = []
-    
     output = 0
-    for square in squares: 
-        polygons.append(Polygon(square))
+    squares = [Polygon(square) for square in squares]
     
     for point in points:
-        for poly in polygons:
+        for poly in squares:
             if poly.contains(point):
                output += 1 
     

@@ -37,7 +37,7 @@ class PlaneSweep():
             event = PrioritizedItem((p[1], p[0]), square)
             self.__events.put(event)
             
-            p = square.getPoint(2) # point is (x, y), but we want to sort by y, then x
+            p = square.getPoint(3) # point is (x, y), but we want to sort by y, then x
             event = PrioritizedItem((p[1], p[0]), square)
             self.__events.put(event)
             
@@ -77,8 +77,8 @@ class PlaneSweep():
                 self.__sweepState.insert(xmax, square.id)
         else:
             # square exit event
-            self.__sweepState.delete(xmin)
-            self.__sweepState.delete(xmax)
+            self.__sweepState.delete(xmin, square.id)
+            self.__sweepState.delete(xmax, square.id)
     
     
     def __handlePointEvent(self, point: tuple[float, float]):

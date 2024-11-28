@@ -191,11 +191,17 @@ class Tree():
             else:
                 current_node = current_node.left
 
-    def delete(self, key):
+    def delete(self, key, value = None):
         node = self.search(key)
         if node is None:
             return False
         else:
+            if value is not None:
+                # we want to deregister a specific square from this node
+                if value in node.value:
+                    node.value.remove(value)
+                    return True
+                return False
             return self.delete_node(node)
 
     def make_list(self, aNode, a=[]):
