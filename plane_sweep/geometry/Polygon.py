@@ -11,7 +11,15 @@ class Polygon():
             self.lims = (xmin, xmax, ymin, ymax)
         elif len(args) == 4:
             assert all([type(x) == float for x in args])
-            self.lims = args
+            a, b, c, d = args
+            
+            assert not (a == b or c == d)
+            
+            xmin = min(a, b)
+            xmax = max(a, b)
+            ymin = min(c, d)
+            ymax = max(c, d)
+            self.lims = xmin, xmax, ymin, ymax
             
             
         self.id = id

@@ -1,11 +1,10 @@
-from balancedtree.src.Tree import Tree
-from balancedtree.src.Node import Node
+import math
+
+from intervaltree.intervaltree import IntervalTree, Interval
+
 from geometry.Polygon import Polygon
-
-
 from queue import PriorityQueue
 from priorityqueue.PrioritizedItem import PrioritizedItem
-import math
 
 
 class PlaneSweep():
@@ -15,7 +14,7 @@ class PlaneSweep():
         self.__points = points
         self.__squares = squares
         
-        self.__sweepState = None
+        self.__sweepState = IntervalTree()       
         self.__events = PriorityQueue(2 * len(squares) + len(self.__points)) # 2n + points events max
         
         
@@ -64,21 +63,15 @@ class PlaneSweep():
         # add this square's interval to the sweep state
         # is this a square start or end event?
         xmin, xmax, ymin, _ = square.getLimits()
-        
-        squareEventIntervalStart = Node(xmin, square.id)
-        squareEventIntervalEnd = Node(xmax, square.id)
+        interval = Interval(xmin, xmax, square.id)
+    
         
         if math.isclose(yValue, ymin):
-            # on-the-fly initialization of the sweep state
-            if self.__sweepState is None:
-                self.__sweepState = Tree([squareEventIntervalStart, squareEventIntervalEnd])
-            else:
-                self.__sweepState.insert(xmin, square.id)
-                self.__sweepState.insert(xmax, square.id)
+            # square entry event
+            self.__sweepState.add(interval)
         else:
             # square exit event
-            self.__sweepState.delete(xmin, square.id)
-            self.__sweepState.delete(xmax, square.id)
+            self.__sweepState.remove(interval)
     
     
     def __handlePointEvent(self, point: tuple[float, float]):
@@ -92,23 +85,4 @@ class PlaneSweep():
 
     
     def __countIntervals(self, xValue: float):
-        # search the balanced tree for xValue. This is likely going to fail, 
-        if self.__sweepState is None:
-            return 0
-        
-        node: Node = self.__sweepState.root
-        visitedIntervals = []
-        
-        while node is not None:
-            [visitedIntervals.append(x) for x in node.value]
-            if math.isclose(node.key, xValue):
-                return len(set(visitedIntervals))
-            elif node.key < xValue:
-                node = node.right
-            else:
-                node = node.left
-                
-        # we probably don't find the exact xValue, since we only store interval start and end points.
-        # thus, at this point we should have the interval that contains xValue
-        # we can simply return the number of unique values in the visitedIntervals list
-        return len(set(visitedIntervals))
+        return len(self.__sweepState[xValue])
