@@ -4,6 +4,7 @@ from intervaltree.intervaltree import IntervalTree, Interval
 
 from geometry.Polygon import Polygon
 from queue import PriorityQueue
+import heapq
 from priorityqueue.PrioritizedItem import PrioritizedItem
 
 
@@ -15,13 +16,13 @@ class PlaneSweep():
         self.__squares = squares
         
         self.__sweepState = IntervalTree()       
-        self.__events = PriorityQueue(2 * len(squares) + len(self.__points)) # 2n + points events max
+        self.__events = []
         
         
     def sweep(self):
         self.__getEvents()
-        while self.__events.empty() is False:
-            event = self.__events.get(block=False) # don't block, only one thread
+        while len(self.__events) > 0:
+            event = heapq.heappop(self.__events) # don't block, only one thread
             if event is None:
                 break
             
@@ -30,20 +31,30 @@ class PlaneSweep():
         
         
     def __getEvents(self):
-        # all static events are the start and end points of the squares, as the top-left and bottom-left corners of the squares. Handle event priority ordering automatically based on y, then x coordinates
+        # all static events are the start and end points of the squares, as the top-right and bottom-right corners of the squares. 
+        # Handle event priority ordering automatically based on y, then x coordinates
+        # it is important that we choose the right-most points, because if a point has the same y-coordinate as the top or bottom boundary,
+        # we want to handle the point first. Tuples provide this ordering automatically, so long as the x coordinate of the square is the right boundary
+        # moreover, to handle points before squares in cases where the point lies on the right boundary AND top or bottom boundary, we add a third element
+        # to the priority tuple, which is set so that 
+        # - square bottom boundaries (entry) are handled before points
+        # - square top boundaries (exit) are handled after points
         for square in self.__squares:
-            p = square.getPoint(0) # point is (x, y), but we want to sort by y, then x
-            event = PrioritizedItem((p[1], p[0]), square)
-            self.__events.put(event)
             
-            p = square.getPoint(3) # point is (x, y), but we want to sort by y, then x
-            event = PrioritizedItem((p[1], p[0]), square)
-            self.__events.put(event)
+            # bottom boundary
+            p = square.getPoint(0) # point is (x, y), but we want to sort by y, then x
+            event = PrioritizedItem((p[1], p[0], 0), square)
+            heapq.heappush(self.__events, event)
+            
+            # top boundary
+            p = square.getPoint(2) # point is (x, y), but we want to sort by y, then x
+            event = PrioritizedItem((p[1], p[0], 2), square)
+            heapq.heappush(self.__events, event)
             
         # points themselves are also events, at these events check which squares they are in
         for point in self.__points:
-            event = PrioritizedItem((point[1], point[0]), point)
-            self.__events.put(event)
+            event = PrioritizedItem((point[1], point[0], 1), point)
+            heapq.heappush(self.__events, event)
     
     
     def __handleEvent(self, event: PrioritizedItem):
@@ -55,18 +66,15 @@ class PlaneSweep():
     
     
     """
-    Method for handling square events. Will insert into the sweep line state the start and end of the square interval, as a projection of the square onto the x-axis.
-    For each square, we thus get 2 entries in the sweep line state. In order to be able to associate these entries with the square, we will use the square's id as the value of the node.
-    The tree ordering is kept based only on the x-coordinate of the square's interval.
+    Method for handling square events: the bottom boundary of the square. Handle these with 
     """
     def __handleSquareEvent(self, yValue: float, square: Polygon):
         # add this square's interval to the sweep state
         # is this a square start or end event?
         xmin, xmax, ymin, _ = square.getLimits()
         interval = Interval(xmin, xmax, square.id)
-    
-        
-        if math.isclose(yValue, ymin):
+            
+        if yValue == ymin:
             # square entry event
             self.__sweepState.add(interval)
         else:
@@ -85,4 +93,7 @@ class PlaneSweep():
 
     
     def __countIntervals(self, xValue: float):
-        return len(self.__sweepState[xValue])
+        # x = self.__sweepState[xValue]
+        # for i in x:
+            # print(f"Point {xValue} is in square {i.data}")
+        return self.__sweepState.countPointOverlaps(xValue)

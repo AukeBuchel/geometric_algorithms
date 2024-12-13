@@ -595,6 +595,12 @@ class IntervalTree(MutableSet):
         if self.is_empty():
             return False
         return bool(self.top_node.contains_point(p))
+    
+    # def count_overlaps(self, point, begin=None):
+    #     # counts the number of intervals that contain this point
+    #     if begin is None:
+            
+            
 
     def overlaps_range(self, begin, end):
         """
@@ -873,6 +879,18 @@ class IntervalTree(MutableSet):
         if not root:
             return set()
         return root.search_point(p, set())
+    
+    def countPointOverlaps(self, p: int) -> int:
+        """
+        Returns the number of intervals that contain p
+        """
+        root = self.top_node
+        if not root:
+            return 0
+        return root.count_point(p, 0)
+        # return root.count_point(p)
+
+
 
     def envelop(self, begin, end=None):
         """

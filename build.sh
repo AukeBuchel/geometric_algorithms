@@ -1,5 +1,4 @@
 #!/bin/bash
-
 # Script to package a Python project using zipapp with arguments
 
 # Check if sufficient arguments are provided
@@ -22,3 +21,4 @@ if [ $? -eq 0 ]; then
 else
     echo "Failed to create archive."
 fi
+

@@ -305,13 +305,24 @@ class Node(object):
         for j in point_list:
             self.search_point(j, result)
         return result
+    
+    def count_point(self, point, result):
+        for k in self.s_center:
+            if k.begin <= point <= k.end:
+                result += 1
+        if point < self.x_center and self[0]:
+            return self[0].count_point(point, result)
+        elif point > self.x_center and self[1]:
+            return self[1].count_point(point, result)
+        return result
+    
 
     def search_point(self, point, result):
         """
         Returns all intervals that contain point.
         """
         for k in self.s_center:
-            if k.begin <= point < k.end:
+            if k.begin <= point <= k.end:
                 result.add(k)
         if point < self.x_center and self[0]:
             return self[0].search_point(point, result)
@@ -439,6 +450,8 @@ class Node(object):
                 #if new_self: new_self.verify()
                 return greatest_child, new_self
 
+    # TODO: adapt this to count the number of intervals that overlap with the point
+    # this should use a global counter
     def contains_point(self, p):
         """
         Returns whether this node or a child overlaps p.
@@ -540,6 +553,7 @@ class Node(object):
         #fields = [self.x_center, self.balance, fieldcount]
         #return "Node({}, b={}, {})".format(*fields)
 
+    # NOTE: use this to count the number of intervals that overlap with the point
     def count_nodes(self):
         """
         Count the number of Nodes in this subtree.

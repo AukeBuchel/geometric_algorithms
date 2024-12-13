@@ -83,7 +83,7 @@ class Interval(namedtuple('IntervalBase', ['begin', 'end', 'data'])):
         :return: True or False
         :rtype: bool
         """
-        return self.begin <= p < self.end
+        return self.begin <= p <= self.end
     
     def range_matches(self, other):
         """
