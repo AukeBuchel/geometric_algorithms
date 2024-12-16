@@ -316,6 +316,20 @@ class Node(object):
             return self[1].count_point(point, result)
         return result
     
+    def count_point2(self, point, res):
+        ints = [i for i in self.s_center]        
+        for i in ints:
+            if i.begin <= point <= i.end:
+                res += 1
+        
+        
+        if point < ints[0].begin and self.left_node:
+            return self.left_node.count_point2(point, res)
+        elif point > ints[len(ints)-1].end and self.right_node:
+            return self.right_node.count_point2(point, res)
+            
+        return res
+    
 
     def search_point(self, point, result):
         """

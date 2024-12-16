@@ -62,8 +62,7 @@ class PlaneSweep():
         if type(event.item) == Polygon:
             self.__handleSquareEvent(event.priority[0], event.item)
         else: 
-            self.__handlePointEvent(event.item)
-    
+            self.__handlePointEvent(event.item)    
     
     """
     Method for handling square events: the bottom boundary of the square. Handle these with 
@@ -96,4 +95,8 @@ class PlaneSweep():
         # x = self.__sweepState[xValue]
         # for i in x:
             # print(f"Point {xValue} is in square {i.data}")
-        return self.__sweepState.countPointOverlaps(xValue)
+            
+        # print(f"point {xValue} checked in tree") 
+        # self.__sweepState.print_structure()            
+    
+        return self.__sweepState.countPointOverlaps2(xValue)
