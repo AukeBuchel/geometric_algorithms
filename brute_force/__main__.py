@@ -18,7 +18,7 @@ def readInput():
 
 
 def readInputFromFile():
-    with open("testinputs/test06.txt", "r") as f:
+    with open("testinputs/test00.txt", "r") as f:
         points = []
         squares = []
         

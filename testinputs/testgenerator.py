@@ -1,7 +1,7 @@
 import random
 
 nPoints = int(input("number of points: ").strip())
-nSquares = int(input("number of points: ").strip())
+nSquares = int(input("number of rectangles: ").strip())
 testId = int(input("test id: ").strip())
 
 points = []

@@ -893,6 +893,28 @@ class IntervalTree(MutableSet):
         # now go down the tree looking at the nodes
         return root.count_point2(p, 0)
 
+    def countPointOverlaps3(self, p:int) -> int:
+        res = 0
+        cursor = self.top_node
+        
+        # go down the tree looking for xValue
+        while cursor is not None:
+            
+            # print(f"looking for {p} in {cursor.x_center}")
+            for interval in cursor.s_center:
+                # print(f"checking {interval}")
+                if interval.begin <= p <= interval.end:
+                    res += 1
+
+            if p < cursor.x_center and cursor.left_node:
+                cursor = cursor.left_node
+            elif p > cursor.x_center and cursor.right_node:
+                cursor = cursor.right_node
+            else: break
+
+            
+        
+        return res
 
 
     def envelop(self, begin, end=None):

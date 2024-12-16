@@ -99,4 +99,4 @@ class PlaneSweep():
         # print(f"point {xValue} checked in tree") 
         # self.__sweepState.print_structure()            
     
-        return self.__sweepState.countPointOverlaps2(xValue)
+        return self.__sweepState.countPointOverlaps3(xValue)
