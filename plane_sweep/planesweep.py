@@ -39,14 +39,13 @@ class PlaneSweep():
         # to the priority tuple, which is set so that 
         # - square bottom boundaries (entry) are handled before points
         # - square top boundaries (exit) are handled after points
-        for square in self.__squares:
-            
-            # bottom boundary
+        for square in self.__squares:                   
+            # bottom (entry) boundary
             p = square.getPoint(0) # point is (x, y), but we want to sort by y, then x
             event = PrioritizedItem((p[1], p[0], 0), square)
             heapq.heappush(self.__events, event)
             
-            # top boundary
+            # top (exit) boundary
             p = square.getPoint(2) # point is (x, y), but we want to sort by y, then x
             event = PrioritizedItem((p[1], p[0], 2), square)
             heapq.heappush(self.__events, event)
@@ -60,24 +59,33 @@ class PlaneSweep():
     def __handleEvent(self, event: PrioritizedItem):
         # is this a point or a square?
         if type(event.item) == Polygon:
-            self.__handleSquareEvent(event.priority[0], event.item)
+            self.__handleSquareEvent(event.priority, event.item)
         else: 
             self.__handlePointEvent(event.item)    
     
     """
     Method for handling square events: the bottom boundary of the square. Handle these with 
     """
-    def __handleSquareEvent(self, yValue: float, square: Polygon):
+    def __handleSquareEvent(self, priority: tuple[float, float, int], square: Polygon):
+        _, _, tag = priority
+        
+        
         # add this square's interval to the sweep state
         # is this a square start or end event?
-        xmin, xmax, ymin, _ = square.getLimits()
+        xmin, xmax, ymin, ymax = square.getLimits()
         interval = Interval(xmin, xmax, square.id)
-            
-        if yValue == ymin:
+        
+        
+        
+        isEntry = True if (tag == 0) else False
+        
+        if isEntry:
             # square entry event
+            # print("entry event")
             self.__sweepState.add(interval)
         else:
             # square exit event
+            # print("exit event")
             self.__sweepState.remove(interval)
     
     
@@ -94,7 +102,7 @@ class PlaneSweep():
     def __countIntervals(self, xValue: float):
         # x = self.__sweepState[xValue]
         # for i in x:
-            # print(f"Point {xValue} is in square {i.data}")
+        #     print(f"Point {xValue} is in square {i.data}")
             
         # print(f"point {xValue} checked in tree") 
         # self.__sweepState.print_structure()            

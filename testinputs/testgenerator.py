@@ -17,11 +17,7 @@ for i in range(nSquares):
     ymin = int(random.uniform(0, 1000))
     xmax = int(random.uniform(xmin, 1000))
     ymax = int(random.uniform(ymin, 1000))
-    
-    if xmin == xmax:
-        xmax += int(random.uniform(2, 200))
-    if ymin == ymax:
-        ymax += int(random.uniform(2, 200))
+
         
     xmin = min(xmin, xmax)
     xmax = max(xmin, xmax)

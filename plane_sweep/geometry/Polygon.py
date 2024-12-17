@@ -1,11 +1,5 @@
 class Polygon():
     def __init__(self, args: list, id: int):
-        # a, b, c, d = args
-        # xmin = min(a, b)
-        # xmax = max(a, b)
-        # ymin = min(c, d)
-        # ymax = max(c, d)
-        # self.lims = xmin, xmax, ymin, ymax
         self.lims = args
         self.id = id
     

@@ -136,7 +136,7 @@ class Interval(namedtuple('IntervalBase', ['begin', 'end', 'data'])):
         :return: True if end <= begin else False
         :rtype: bool
         """
-        return self.begin >= self.end
+        return self.begin > self.end
 
     def length(self):
         """
