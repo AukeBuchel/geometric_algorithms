@@ -1,0 +1,4 @@
+points: 1
+5 5
+rectangles: 1
+0 10 0 10
