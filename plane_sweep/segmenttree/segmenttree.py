@@ -35,6 +35,8 @@ class SegmentTree:
         Builds a segment tree based on the provided `array`. Supports operations
         of class Operation provided in the operations array.
         """
+        
+        
         self.array = array
         if type(operations) != list:
             raise TypeError("operations must be a list")
@@ -51,12 +53,50 @@ class SegmentTree:
         if self.operations.get(operation_name) == None:
             raise Exception("This operation is not available")
         return self.root._query(start, end, self.operations[operation_name])
+    
+    
+    def pointQuery(self, point, root=None):
+        if root is None:
+            root = self.root
+        
+        if root.values["sum"] > 0:
+            print(f"node is active? {root.values}, {root.range}")
+            res = root.true_intervals
+        else: res = set()
+
+        if root.left or root.right:
+            if root.left and root.left.range[0] <= point <= root.left.range[1]:
+                [res.add(x) for x in self.pointQuery(point, root.left)]
+            elif root.right :
+                [res.add(x) for x in self.pointQuery(point, root.right)]
+                
+        return res
 
     def summary(self):
         """
         Prints the summary for the whole array (values in the root node).
         """
         return self.root.values
+    
+    
+    def associate(self, start, end, node=None):
+        if node is None:
+            node = self.root
+            
+        # if Int(v) sub [start, end]:
+        if node.range[0] >= start and node.range[1] <= end:
+            node.true_intervals.add((start, end))
+            
+            print(f"associated node {node.range} with {start} - {end}")
+            
+            # node.true_intervals += 1
+        else:
+            # if left node interval intersects with [start, end]
+            if node.left and (node.left.range[1] >= start or node.left.range[0] <= end):
+                self.associate(start, end, node.left)
+            if node.right and (node.right.range[1] >= start or node.right.range[0] <= end):
+                self.associate(start, end, node.right)
+
 
     def update(self, position, value):
         """
@@ -88,6 +128,10 @@ class SegmentTreeNode:
         self.values = {}
         self.left = None
         self.right = None
+        
+        self.true_intervals = set()
+        # self.true_intervals = 0
+        
         if start == end:
             self._sync()
             return
@@ -99,15 +143,21 @@ class SegmentTreeNode:
 
     def _query(self, start, end, operation):
         if end < self.range[0] or start > self.range[1]:
-            print(f"{start, end} out of range {self.range[0], self.range[1]}")
+            # this segment does not contain it
+            print(f"range: {self.range} does not contain {start} - {end}")
             return None
         if start <= self.range[0] and self.range[1] <= end:
+            print(f"range: {self.range} fully contained in {start} - {end}")
+            # this segment is fully contained int the query range
             return self.values[operation.name]
+        
+        print(f"range: {self.range} partially contained in {start} - {end}")
         self._push()
         left_res = self.left._query(start, end,
                                     operation) if self.left else None
         right_res = self.right._query(start, end,
                                       operation) if self.right else None
+        
         if left_res is None:
             return right_res
         if right_res is None:

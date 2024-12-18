@@ -66,19 +66,31 @@ class PlaneSweep():
             
             # entry boundary
             event = PrioritizedItem((ymin, 0, x_compressed[xmin], x_compressed[xmax]), square)
+            # event = PrioritizedItem((ymin, 0, xmin, xmax), square)
             heapq.heappush(self.__events, event)
             
             # exit boundary
             event = PrioritizedItem((ymax, 2, x_compressed[xmin], x_compressed[xmax]), square)
+            # event = PrioritizedItem((ymax, 2, xmin, xmax), square)
             heapq.heappush(self.__events, event)
+            
             
         for point in self.__points: 
             event = PrioritizedItem((point[1], 1, x_compressed[point[0]]), point)
+            # event = PrioritizedItem((point[1], 1, point[0]), point)
             heapq.heappush(self.__events, event)
             
             
+        # self.__sweepState = SegmentTree([0] * len(x_cords), operations=[sum_operation])
         self.__sweepState = SegmentTree([0] * len(x_compressed), operations=[sum_operation])
+        for square in self.__squares:
+            xmin, xmax, _, _ = square.getLimits()
+            self.__sweepState.associate(x_compressed[xmin], x_compressed[xmax])
+            
+        
         self.x_compressed = x_compressed
+        
+        print(f"compressed cords: {x_compressed}")
     
     
     
@@ -99,37 +111,32 @@ class PlaneSweep():
         # add this square's interval to the sweep state
         # is this a square start or end event?
         
-        isEntry = True if (tag == 0) else False
+        isEntry = tag == 0
 
         if isEntry:
-            print("entry event")
+            print(f"entry event x:{xmin} - {xmax}")
+            # mark segment as active
+            # print(self.__sweepState)
             self.__sweepState.update_range(xmin, xmax, 1)            
+            print(self.__sweepState)
         else:
-            print("exit event")
+            print(f"exit event x: {xmin} - {xmax}")
+            # mark segment as inactive
+            # print(self.__sweepState)
             self.__sweepState.update_range(xmin, xmax, 0)    
+            # print(self.__sweepState)
     
     def __handlePointEvent(self, priority, point: tuple[float, float]):
         # check how many intervals of the sweep state this point is in
         # then update the output
-        print("point event")
         _, _, x = priority
+        print(f"point event x: {point}")
+        old = self.__output
         self.__output += self.__countIntervals(x)
     
-    def __findNewEvent(self):
-        # not used, as all events are known in advance
-        pass
-
-    
     def __countIntervals(self, xValue: float):
-        # x = self.__sweepState[xValue]
-        # for i in x:
-        #     print(f"Point {xValue} is in square {i.data}")
             
-        # print(f"point {xValue} checked in tree") 
-        # self.__sweepState.print_structure()            
-        res = self.__sweepState.query(xValue, xValue, "sum")
-        
-        if res is None:
-            return 0
-        
-        return res
+        # res = self.__sweepState.query(xValue, xValue, "sum")
+        res = self.__sweepState.pointQuery(xValue)
+        print(res)
+        return len(res) if res is not None else None

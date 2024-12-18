@@ -18,7 +18,7 @@ def readInput():
 
 
 def readInputFromFile():
-    with open("testinputs/test016.txt", "r") as f:
+    with open("testinputs/test01.txt", "r") as f:
         points = []
         squares = []
         
@@ -43,7 +43,7 @@ def main():
     for point in points:
         for poly in squares:
             if poly.contains(point):
-                # print(f"Point {point[0]} is in square {poly.id}")
+                print(f"Point {point[0]} is in square {poly.id}")
                 output += 1 
     
     print(output)
