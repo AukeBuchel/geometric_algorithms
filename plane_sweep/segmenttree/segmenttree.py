@@ -78,10 +78,24 @@ class SegmentTree:
                 
         return res
     
-    def pointQuery2(self, point, root=None):
+    def pointQuery2(self, point, root=None, unique_count=0):
         # apply some operation that counts the number of unique true intervals at a subtree 
+        if root is None:
+            root = self.root
+
+        # Count the number of true_intervals at this node
+        unique_count += len(root.true_intervals)
+
+        # Traverse left or right based on the query point
+        if root.left or root.right:  # If it's not a leaf node
+            if root.left and root.left.range[0] <= point <= root.left.range[1]:
+                unique_count = self.pointQuery2(point, root.left, unique_count)
+            elif root.right:
+                unique_count = self.pointQuery2(point, root.right, unique_count)
+
+        return unique_count
+
         
-        pass
 
     def summary(self):
         """

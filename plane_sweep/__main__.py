@@ -19,7 +19,7 @@ def readInput():
     return points, squares
 
 def readInputFromFile():
-    with open("testinputs/test021.txt", "r") as f:
+    with open("testinputs/test06.txt", "r") as f:
         points = []
         squares = []
         
@@ -38,8 +38,8 @@ def readInputFromFile():
 
 def main():
     try:
-        # points, squares = readInput()
-        points, squares = readInputFromFile()
+        points, squares = readInput()
+        # points, squares = readInputFromFile()
         output = 0
         
         ps = PlaneSweep(points, squares)

@@ -124,6 +124,8 @@ class PlaneSweep():
         self.__output += self.__countIntervals(x)
     
     def __countIntervals(self, xValue: float):
-        res = self.__sweepState.pointQuery(xValue)
+        res = self.__sweepState.pointQuery2(xValue)
+        return res
         # print(f"for {xValue}: {res}")
-        return len(res) if res is not None else None
+        # res = self.__sweepState.pointQuery(xValue)
+        # return len(res) if res is not None else None
