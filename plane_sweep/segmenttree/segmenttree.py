@@ -17,6 +17,11 @@ def max_multiple(x, count):
     return x
 
 
+def count_multiple(x, count):
+    return len(x) * count
+
+
+count_operation = Operation("count", len, count_multiple, 0)
 sum_operation = Operation("sum", sum, add_multiple, 0)
 min_operation = Operation("min", min, min_multiple, 1e9)
 max_operation = Operation("max", max, max_multiple, -1e9)
@@ -55,22 +60,28 @@ class SegmentTree:
         return self.root._query(start, end, self.operations[operation_name])
     
     
-    def pointQuery(self, point, root=None):
+    def pointQuery(self, point, root=None, res=None):
         if root is None:
             root = self.root
+        if res is None: 
+            res = set()
         
-        if root.values["sum"] > 0:
-            print(f"node is active? {root.values}, {root.range}")
-            res = root.true_intervals
-        else: res = set()
+        if len(root.true_intervals) > 0:
+            [res.add(x) for x in root.true_intervals]
 
+        # not a leaf node
         if root.left or root.right:
             if root.left and root.left.range[0] <= point <= root.left.range[1]:
-                [res.add(x) for x in self.pointQuery(point, root.left)]
+                self.pointQuery(point, root.left, res)
             elif root.right :
-                [res.add(x) for x in self.pointQuery(point, root.right)]
+                self.pointQuery(point, root.right, res)
                 
         return res
+    
+    def pointQuery2(self, point, root=None):
+        # apply some operation that counts the number of unique true intervals at a subtree 
+        
+        pass
 
     def summary(self):
         """
@@ -79,23 +90,57 @@ class SegmentTree:
         return self.root.values
     
     
-    def associate(self, start, end, node=None):
+    """Does interval S1 overlap S2?
+    |---S1---|
+        |---S2---|
+    
+    or 
+    
+        |---S1---|
+    |---S2---|    
+    """
+    def __overlaps(self, i1, i2):
+        s1, e1 = i1
+        s2, e2 = i2
+        
+        if (s1 <= e2 and s1 >= s2) or (e1 <= e2 and e1 >= s2):
+            return True
+        elif (s2 <= e1 and s2 >= s1) or (e2 <= e1 and e2 >= s1):
+            return True
+        
+        return False    
+    
+    """
+    Associate a primitive interval with a true interval. This should only happen if the true interval is fully contained in the primitive interval.
+    """
+    def associate(self, start, end, id, node=None):
         if node is None:
             node = self.root
             
         # if Int(v) sub [start, end]:
         if node.range[0] >= start and node.range[1] <= end:
-            node.true_intervals.add((start, end))
-            
-            print(f"associated node {node.range} with {start} - {end}")
-            
-            # node.true_intervals += 1
+            node.true_intervals.add(id)
+            # print(f"associated node {node.range} with {start} - {end}")            
         else:
             # if left node interval intersects with [start, end]
-            if node.left and (node.left.range[1] >= start or node.left.range[0] <= end):
-                self.associate(start, end, node.left)
-            if node.right and (node.right.range[1] >= start or node.right.range[0] <= end):
-                self.associate(start, end, node.right)
+            if node.left and self.__overlaps(node.left.range, (start, end)):
+                self.associate(start, end, id, node.left)
+            if node.right and self.__overlaps(node.right.range, (start, end)):
+                self.associate(start, end, id, node.right)
+                
+    def dissociate(self, start, end, id, node=None):
+        if node is None:
+            node = self.root
+
+        if node.range[0] >= start and node.range[1] <= end:
+            node.true_intervals.remove(id)
+            # print(f"dissociated node {node.range} with {start} - {end}")            
+        else:
+            # if left node interval intersects with [start, end]
+            if node.left and self.__overlaps(node.left.range, (start, end)):
+                self.dissociate(start, end, id, node.left)
+            if node.right and self.__overlaps(node.right.range, (start, end)):
+                self.dissociate(start, end, id, node.right)
 
 
     def update(self, position, value):
@@ -144,14 +189,14 @@ class SegmentTreeNode:
     def _query(self, start, end, operation):
         if end < self.range[0] or start > self.range[1]:
             # this segment does not contain it
-            print(f"range: {self.range} does not contain {start} - {end}")
+            # print(f"range: {self.range} does not contain {start} - {end}")
             return None
         if start <= self.range[0] and self.range[1] <= end:
-            print(f"range: {self.range} fully contained in {start} - {end}")
+            # print(f"range: {self.range} fully contained in {start} - {end}")
             # this segment is fully contained int the query range
             return self.values[operation.name]
         
-        print(f"range: {self.range} partially contained in {start} - {end}")
+        # print(f"range: {self.range} partially contained in {start} - {end}")
         self._push()
         left_res = self.left._query(start, end,
                                     operation) if self.left else None
@@ -215,8 +260,8 @@ class SegmentTreeNode:
             self.range_value = None
 
     def __repr__(self):
-        ans = "({}, {}): {}\n".format(self.range[0], self.range[1],
-                                      self.values)
+        ans = "({}, {}): {}, {}\n".format(self.range[0], self.range[1],
+                                      self.values, self.true_intervals)
         if self.left:
             ans += self.left.__repr__()
         if self.right:

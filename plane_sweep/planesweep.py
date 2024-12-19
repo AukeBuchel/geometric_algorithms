@@ -82,15 +82,11 @@ class PlaneSweep():
             
             
         # self.__sweepState = SegmentTree([0] * len(x_cords), operations=[sum_operation])
-        self.__sweepState = SegmentTree([0] * len(x_compressed), operations=[sum_operation])
-        for square in self.__squares:
-            xmin, xmax, _, _ = square.getLimits()
-            self.__sweepState.associate(x_compressed[xmin], x_compressed[xmax])
-            
+        self.__sweepState = SegmentTree([0] * len(x_compressed), operations=[sum_operation])           
         
         self.x_compressed = x_compressed
         
-        print(f"compressed cords: {x_compressed}")
+        # print(f"compressed cords: {x_compressed}")
     
     
     
@@ -114,29 +110,20 @@ class PlaneSweep():
         isEntry = tag == 0
 
         if isEntry:
-            print(f"entry event x:{xmin} - {xmax}")
-            # mark segment as active
-            # print(self.__sweepState)
-            self.__sweepState.update_range(xmin, xmax, 1)            
-            print(self.__sweepState)
+            # print(f"entry event x:{xmin} - {xmax}, square {square.id}")
+            self.__sweepState.associate(xmin, xmax, square.id)          
         else:
-            print(f"exit event x: {xmin} - {xmax}")
-            # mark segment as inactive
-            # print(self.__sweepState)
-            self.__sweepState.update_range(xmin, xmax, 0)    
-            # print(self.__sweepState)
+            # print(f"exit event x: {xmin} - {xmax}, square {square.id}")
+            self.__sweepState.dissociate(xmin, xmax, square.id)  
     
     def __handlePointEvent(self, priority, point: tuple[float, float]):
         # check how many intervals of the sweep state this point is in
         # then update the output
         _, _, x = priority
-        print(f"point event x: {point}")
-        old = self.__output
+        # print(f"point event x: {point}")
         self.__output += self.__countIntervals(x)
     
     def __countIntervals(self, xValue: float):
-            
-        # res = self.__sweepState.query(xValue, xValue, "sum")
         res = self.__sweepState.pointQuery(xValue)
-        print(res)
+        # print(f"for {xValue}: {res}")
         return len(res) if res is not None else None
