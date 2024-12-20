@@ -1,11 +1,8 @@
 import math
 
-from intervaltree.intervaltree import IntervalTree, Interval
 from segmenttree.segmenttree import SegmentTree, sum_operation
 
-
 from geometry.Polygon import Polygon
-from queue import PriorityQueue
 import heapq
 from priorityqueue.PrioritizedItem import PrioritizedItem
 

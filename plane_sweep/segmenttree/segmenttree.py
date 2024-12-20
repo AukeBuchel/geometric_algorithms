@@ -42,7 +42,7 @@ class SegmentTree:
         """
         
         
-        self.array = array
+        # self.array = array
         if type(operations) != list:
             raise TypeError("operations must be a list")
         self.operations = {}
@@ -189,16 +189,15 @@ class SegmentTreeNode:
         self.right = None
         
         self.true_intervals = set()
-        # self.true_intervals = 0
         
         if start == end:
-            self._sync()
+            # self._sync()
             return
         self.left = SegmentTreeNode(start, start + (end - start) // 2,
                                     segment_tree)
         self.right = SegmentTreeNode(start + (end - start) // 2 + 1, end,
                                      segment_tree)
-        self._sync()
+        # self._sync()
 
     def _query(self, start, end, operation):
         if end < self.range[0] or start > self.range[1]:
@@ -247,21 +246,21 @@ class SegmentTreeNode:
         self.right._update_range(start, end, value)
         self._sync()
 
-    def _sync(self):
-        if self.range[0] == self.range[1]:
-            for op in self.parent_tree.operations.values():
-                current_value = self.parent_tree.array[self.range[0]]
-                if self.range_value is not None:
-                    current_value = self.range_value
-                self.values[op.name] = op.f([current_value])
-        else:
-            for op in self.parent_tree.operations.values():
-                result = op.f(
-                    [self.left.values[op.name], self.right.values[op.name]])
-                if self.range_value is not None:
-                    bound_length = self.range[1] - self.range[0] + 1
-                    result = op.f_on_equal(self.range_value, bound_length)
-                self.values[op.name] = result
+    # def _sync(self):
+    #     if self.range[0] == self.range[1]:
+    #         for op in self.parent_tree.operations.values():
+    #             current_value = self.parent_tree.array[self.range[0]]
+    #             if self.range_value is not None:
+    #                 current_value = self.range_value
+    #             self.values[op.name] = op.f([current_value])
+    #     else:
+    #         for op in self.parent_tree.operations.values():
+    #             result = op.f(
+    #                 [self.left.values[op.name], self.right.values[op.name]])
+    #             if self.range_value is not None:
+    #                 bound_length = self.range[1] - self.range[0] + 1
+    #                 result = op.f_on_equal(self.range_value, bound_length)
+    #             self.values[op.name] = result
 
     def _push(self):
         if self.range_value is None:
