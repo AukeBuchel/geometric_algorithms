@@ -18,7 +18,7 @@ def readInput():
 
 
 def readInputFromFile():
-    with open("testinputs/test016.txt", "r") as f:
+    with open("testinputs/test07.txt", "r") as f:
         points = []
         squares = []
         
@@ -38,7 +38,12 @@ def main():
     points, squares = readInputFromFile()
     
     output = 0
-    squares = [Polygon(square, squares.index(square)) for square in squares]
+    # squares = [Polygon(square, squares.index(square)) for square in squares]
+    sq = []
+    for i in range(len(squares)):
+        sq.append(Polygon(squares[i], i))
+        
+    squares = sq
     
     for point in points:
         for poly in squares:
